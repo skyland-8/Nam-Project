@@ -17,7 +17,7 @@ function App() {
 
     // API Base URL (Deployed Backend or Local)
     // Check if running on localhost to default to local backend
-    const API_URL = import.meta.env.VITE_API_URL ||
+    const API_URL = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_URL ||
         (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://secure-fl-backend.onrender.com');
 
     // Polling for Dashboard Data
