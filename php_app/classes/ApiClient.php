@@ -47,7 +47,7 @@ class ApiClient
 
     public function startSimulation()
     {
-        return $this->request('/start', 'POST', ['db_password' => '1234']);
+        return $this->request('/start', 'POST', ['db_password' => 'S@i85t@run']);
     }
 
     public function stopSimulation()
