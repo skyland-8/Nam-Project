@@ -139,6 +139,39 @@ class DBManager:
         except Error as e:
             print(f"Error storing global model: {e}")
 
+    def get_all_clients(self):
+        try:
+            sql = "SELECT client_id, registered_at FROM clients ORDER BY registered_at DESC"
+            self.cursor.execute(sql)
+            return self.cursor.fetchall()
+        except Error as e:
+            print(f"Error fetching clients: {e}")
+            return []
+
+    def get_model_history(self):
+        try:
+            sql = "SELECT model_id, round_id, accuracy, created_at FROM global_models ORDER BY model_id DESC LIMIT 20"
+            self.cursor.execute(sql)
+            return self.cursor.fetchall()
+        except Error as e:
+            print(f"Error fetching model history: {e}")
+            return []
+
+    def reset_database(self):
+        try:
+            # Disable FK checks to truncate tables freely
+            self.cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
+            self.cursor.execute("TRUNCATE TABLE updates")
+            self.cursor.execute("TRUNCATE TABLE rounds")
+            self.cursor.execute("TRUNCATE TABLE global_models")
+            self.cursor.execute("TRUNCATE TABLE clients")
+            self.cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
+            self.conn.commit()
+            return True
+        except Error as e:
+            print(f"Error resetting database: {e}")
+            return False
+
     def close(self):
         if self.conn and self.conn.is_connected():
             self.cursor.close()

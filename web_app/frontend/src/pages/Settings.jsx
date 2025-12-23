@@ -2,6 +2,33 @@ import React from 'react';
 import { Save, AlertTriangle, Globe, Lock, Sliders, RefreshCw } from 'lucide-react';
 
 const Settings = () => {
+    const API_URL = import.meta.env.VITE_API_URL || 'https://secure-fl-backend.onrender.com';
+    const [loading, setLoading] = React.useState(false);
+
+    const handleReset = async () => {
+        if (!confirm("Are you sure you want to wipe all system data? This cannot be undone.")) return;
+
+        setLoading(true);
+        try {
+            const res = await fetch(`${API_URL}/api/v1/reset`, { method: 'POST' });
+            if (res.ok) {
+                alert("System reset successful.");
+                window.location.reload();
+            } else {
+                alert("Reset failed.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error communicating with server.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSave = () => {
+        alert("Configuration saved (Simulation Only). backend persistance not implemented yet.");
+    };
+
     return (
         <div className="space-y-8 max-w-4xl mx-auto">
             <header className="text-center mb-12">
@@ -29,7 +56,7 @@ const Settings = () => {
                                 <input
                                     type="text"
                                     disabled
-                                    value="https://secure-fl-backend.onrender.com"
+                                    value={API_URL}
                                     className="input-field w-full opacity-50 cursor-not-allowed"
                                 />
                                 <div className="flex items-center px-4 bg-green-500/10 text-green-400 text-xs font-bold rounded-lg border border-green-500/20">
@@ -71,7 +98,7 @@ const Settings = () => {
                         </div>
                     </div>
                     <div className="mt-8 flex justify-end border-t border-white/5 pt-6">
-                        <button className="btn btn-primary">
+                        <button className="btn btn-primary" onClick={handleSave}>
                             <Save size={18} /> Save Configuration
                         </button>
                     </div>
@@ -88,8 +115,9 @@ const Settings = () => {
                             <p className="text-white font-medium">Reset System State</p>
                             <p className="text-sm text-red-200/60">This will wipe all ledger entries and client registrations.</p>
                         </div>
-                        <button className="btn btn-danger">
-                            <RefreshCw size={18} /> Reset Data
+                        <button className="btn btn-danger" onClick={handleReset} disabled={loading}>
+                            <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
+                            {loading ? "Resetting..." : "Reset Data"}
                         </button>
                     </div>
                 </section>

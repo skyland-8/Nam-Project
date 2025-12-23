@@ -45,6 +45,26 @@ def register_client():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/v1/clients', methods=['GET'])
+def list_clients():
+    """List all registered participants"""
+    try:
+        db = DBManager(password=DB_PASSWORD)
+        db.connect()
+        rows = db.get_all_clients()
+        db.close()
+        
+        clients = []
+        for r in rows:
+            clients.append({
+                "client_id": r[0],
+                "registered_at": r[1],
+                "status": "Online" # In a real system, we'd check heartbeat
+            })
+        return jsonify(clients)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 # --- FL Lifecycle ---
 
 @app.route('/api/v1/rounds/current', methods=['GET'])
@@ -74,6 +94,29 @@ def get_global_model():
         "version": "1.0",
         "timestamp": "2025-12-23T12:00:00Z"
     })
+
+    })
+
+@app.route('/api/v1/models/history', methods=['GET'])
+def get_model_history():
+    """Get history of global model checkpoints"""
+    try:
+        db = DBManager(password=DB_PASSWORD)
+        db.connect()
+        rows = db.get_model_history()
+        db.close()
+        
+        history = []
+        for r in rows:
+            history.append({
+                "version": r[0],
+                "round_id": r[1],
+                "accuracy": r[2],
+                "timestamp": r[3]
+            })
+        return jsonify(history)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/v1/datasets', methods=['GET'])
 def list_datasets():
@@ -208,6 +251,23 @@ def start_sim():
 def stop_sim():
     simulation_runner.stop_simulation()
     return jsonify({"message": "Stopping simulation..."}), 200
+
+@app.route('/api/v1/reset', methods=['POST'])
+def reset_system():
+    """Reset the entire system state (Danger Zone)"""
+    try:
+        simulation_runner.stop_simulation()
+        db = DBManager(password=DB_PASSWORD)
+        db.connect()
+        success = db.reset_database()
+        db.close()
+        
+        if success:
+            return jsonify({"message": "System reset successful"}), 200
+        else:
+            return jsonify({"error": "Failed to reset database"}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/status', methods=['GET'])
 def get_status():

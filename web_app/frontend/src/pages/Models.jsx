@@ -4,12 +4,19 @@ import { Box, GitBranch, Download, ChevronRight, Zap } from 'lucide-react';
 
 const Models = () => {
     const [modelInfo, setModelInfo] = useState(null);
+    const [modelsHistory, setModelsHistory] = useState([]);
     const API_URL = import.meta.env.VITE_API_URL || 'https://secure-fl-backend.onrender.com';
 
     useEffect(() => {
+        // Fetch current model info
         axios.get(`${API_URL}/api/v1/model`)
             .then(res => setModelInfo(res.data))
             .catch(err => console.error(err));
+
+        // Fetch history
+        axios.get(`${API_URL}/api/v1/models/history`)
+            .then(res => setModelsHistory(res.data))
+            .catch(err => console.error("History error", err));
     }, []);
 
     return (
@@ -61,21 +68,22 @@ const Models = () => {
                         <GitBranch className="text-accent" size={24} /> Version History
                     </h3>
                     <div className="space-y-2">
-                        {[1, 2, 3].map((v) => (
-                            <div key={v} className="group flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition-all cursor-pointer border border-transparent hover:border-white/5">
+                        {modelsHistory.length === 0 && <p className="text-gray-500 italic">No history available.</p>}
+                        {modelsHistory.map((model) => (
+                            <div key={model.version} className="group flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition-all cursor-pointer border border-transparent hover:border-white/5">
                                 <div className="w-12 h-12 rounded-xl bg-surface flex items-center justify-center text-gray-400 font-bold group-hover:text-primary group-hover:bg-primary/10 transition-colors">
-                                    v{v}
+                                    v{model.version}
                                 </div>
                                 <div className="flex-1">
                                     <h4 className="text-white font-semibold flex items-center gap-2">
-                                        checkpoint_{v}.pt
-                                        {v === 3 && <span className="px-2 py-0.5 rounded text-[10px] bg-primary/20 text-primary">CURRENT</span>}
+                                        Model Checkpoint #{model.version}
+                                        {/* {model.version === modelInfo?.version && <span className="px-2 py-0.5 rounded text-[10px] bg-primary/20 text-primary">CURRENT</span>} */}
                                     </h4>
-                                    <p className="text-xs text-gray-500">Committed 2 days ago</p>
+                                    <p className="text-xs text-gray-500">Round {model.round_id} • {new Date(model.timestamp).toLocaleString()}</p>
                                 </div>
                                 <div className="text-right">
                                     <div className="flex items-center gap-1 text-emerald-400 font-bold">
-                                        <Zap size={14} /> {(80 + v * 2).toFixed(1)}%
+                                        <Zap size={14} /> {(model.accuracy * 100).toFixed(1)}%
                                     </div>
                                     <ChevronRight size={16} className="text-gray-600 ml-auto mt-1 group-hover:translate-x-1 transition-transform" />
                                 </div>
