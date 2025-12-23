@@ -14,6 +14,7 @@ function App() {
     const [ledger, setLedger] = useState([]);
     const [metrics, setMetrics] = useState([]);
     const [errorDetails, setErrorDetails] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     // API Base URL (Deployed Backend or Local)
     // Check if running on localhost to default to local backend
