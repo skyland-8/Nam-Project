@@ -2,7 +2,7 @@ import React from 'react';
 import { Play, Square, Activity, Database, Server, Cpu } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
-const Dashboard = ({ status, startSim, stopSim, logs, metrics, ledger }) => {
+const Dashboard = ({ status, startSim, stopSim, logs, metrics, ledger, loading }) => {
     return (
         <div className="space-y-8">
             <header className="flex justify-between items-end">
@@ -13,17 +13,19 @@ const Dashboard = ({ status, startSim, stopSim, logs, metrics, ledger }) => {
                 <div className="flex gap-4">
                     <button
                         onClick={startSim}
-                        disabled={status === "RUNNING"}
-                        className={`btn ${status === "RUNNING" ? 'bg-surface text-gray-500 cursor-not-allowed' : 'btn-primary'}`}
+                        disabled={status === "RUNNING" || loading}
+                        className={`btn ${status === "RUNNING" || loading ? 'bg-surface text-gray-500 cursor-not-allowed' : 'btn-primary'}`}
                     >
-                        <Play size={18} fill="currentColor" /> Initialize Training
+                        {loading && status !== "RUNNING" ? <div className="animate-spin w-4 h-4 border-2 border-white/20 border-t-white rounded-full"></div> : <Play size={18} fill="currentColor" />}
+                        {loading && status !== "RUNNING" ? 'Starting...' : 'Initialize Training'}
                     </button>
                     <button
                         onClick={stopSim}
-                        disabled={status !== "RUNNING"}
-                        className={`btn ${status !== "RUNNING" ? 'bg-surface text-gray-500 cursor-not-allowed' : 'btn-danger'}`}
+                        disabled={status !== "RUNNING" || loading}
+                        className={`btn ${status !== "RUNNING" || loading ? 'bg-surface text-gray-500 cursor-not-allowed' : 'btn-danger'}`}
                     >
-                        <Square size={18} fill="currentColor" /> Emergency Stop
+                        {loading && status === "RUNNING" ? <div className="animate-spin w-4 h-4 border-2 border-white/20 border-t-white rounded-full"></div> : <Square size={18} fill="currentColor" />}
+                        {loading && status === "RUNNING" ? 'Stopping...' : 'Emergency Stop'}
                     </button>
                 </div>
             </header>

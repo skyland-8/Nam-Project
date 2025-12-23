@@ -13,9 +13,12 @@ function App() {
     const [logs, setLogs] = useState([]);
     const [ledger, setLedger] = useState([]);
     const [metrics, setMetrics] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-    // API Base URL (Deployed Backend)
-    const API_URL = import.meta.env.VITE_API_URL || 'https://secure-fl-backend.onrender.com';
+    // API Base URL (Deployed Backend or Local)
+    // Check if running on localhost to default to local backend
+    const API_URL = import.meta.env.VITE_API_URL ||
+        (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://secure-fl-backend.onrender.com');
 
     // Polling for Dashboard Data
     useEffect(() => {
@@ -50,6 +53,7 @@ function App() {
     };
 
     const startSim = async () => {
+        setLoading(true);
         try {
             await axios.post(`${API_URL}/api/start`, { db_password: "1234" });
         } catch (err) {
@@ -59,16 +63,21 @@ function App() {
             } else {
                 alert(`Failed to start: ${err.message}`);
             }
+        } finally {
+            setLoading(false);
         }
     };
 
     const stopSim = async () => {
+        setLoading(true);
         try {
             await axios.post(`${API_URL}/api/stop`);
             setStatus("IDLE");
             alert("Simulation stopped.");
         } catch (err) {
             alert(`Failed to stop: ${err.message}`);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -84,6 +93,7 @@ function App() {
                             logs={logs}
                             metrics={metrics}
                             ledger={ledger}
+                            loading={loading}
                         />
                     } />
                     <Route path="/clients" element={<Clients />} />
