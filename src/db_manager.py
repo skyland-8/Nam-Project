@@ -8,7 +8,7 @@ class DBManager:
         self.config = {
             'host': host or os.getenv('DB_HOST', 'mysql.gb.stackcp.com'),
             'user': user or os.getenv('DB_USER', 'Nam'),
-            'password': password or os.getenv('DB_PASSWORD', 'sdb-o.hosting.stackcp.net'),
+            'password': password or os.getenv('DB_PASSWORD', 'S@i85t@run'),
             'port': port or int(os.getenv('DB_PORT', 41286)),
             'database': database or os.getenv('DB_NAME', 'nam-project-313937c3b4')
         }

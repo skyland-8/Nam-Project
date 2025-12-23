@@ -15,7 +15,7 @@ import simulation_runner
 app = Flask(__name__)
 CORS(app)
 
-DB_PASSWORD = os.getenv('DB_PASSWORD', 'sdb-o.hosting.stackcp.net')
+DB_PASSWORD = os.getenv('DB_PASSWORD', 'S@i85t@run')
 
 # =========================================================
 #  V1 API ENDPOINTS
