@@ -23,7 +23,7 @@ class DBManager:
             self.cursor = self.conn.cursor()
             
             # self.cursor.execute(f"CREATE DATABASE IF NOT EXISTS {self.database}") # Not allowed on shared hosting
-            self.cursor.execute(f"USE {self.database}")
+            self.cursor.execute(f"USE `{self.database}`")
             
             self._create_tables()
             print("Successfully connected to the database and initialized tables.")
