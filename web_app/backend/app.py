@@ -75,6 +75,26 @@ def get_global_model():
         "timestamp": "2025-12-23T12:00:00Z"
     })
 
+@app.route('/api/v1/dataset/sample', methods=['GET'])
+def get_dataset_sample():
+    """Get a preview of the training data"""
+    try:
+        file_path = os.path.join(project_root, "shakespeare.txt")
+        if not os.path.exists(file_path):
+            return jsonify({"error": "Dataset not found on server"}), 404
+            
+        with open(file_path, 'r', encoding='utf-8') as f:
+            # Read first 1000 chars
+            content = f.read(1000)
+        
+        return jsonify({
+            "dataset": "Shakespeare",
+            "total_size": os.path.getsize(file_path),
+            "preview": content + "..."
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/api/v1/updates', methods=['POST'])
 def submit_update():
     """Submit an encrypted update"""

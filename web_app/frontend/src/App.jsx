@@ -8,6 +8,10 @@ function App() {
     const [logs, setLogs] = useState([]);
     const [ledger, setLedger] = useState([]);
     const [metrics, setMetrics] = useState([]);
+    const [datasetPreview, setDatasetPreview] = useState(null);
+
+    // API Base URL from Env (for Render) or Localhost default
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
     // Polling
     useEffect(() => {
@@ -47,7 +51,16 @@ function App() {
 
     const stopSim = async () => {
         try {
-            await axios.post('http://localhost:5000/api/stop');
+            await axios.post(`${API_URL}/api/stop`);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const fetchDataset = async () => {
+        try {
+            const res = await axios.get(`${API_URL}/api/v1/dataset/sample`);
+            setDatasetPreview(res.data);
         } catch (err) {
             console.error(err);
         }
@@ -69,8 +82,23 @@ function App() {
                     <button onClick={stopSim} disabled={status !== "RUNNING"} className="flex gap-2 items-center bg-red-600 hover:bg-red-700">
                         <Square size={18} /> Stop
                     </button>
+                    <button onClick={fetchDataset} className="flex gap-2 items-center bg-slate-700 hover:bg-slate-600">
+                        <Database size={18} /> View Dataset
+                    </button>
                 </div>
             </header>
+
+            {/* Dataset Modal/Panel */}
+            {datasetPreview && (
+                <div className="mb-6 bg-slate-800 p-6 rounded-xl border border-slate-700 relative">
+                    <button onClick={() => setDatasetPreview(null)} className="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+                    <h2 className="text-xl font-semibold mb-2 text-yellow-400">Dataset: {datasetPreview.dataset}</h2>
+                    <p className="text-sm text-gray-400 mb-4">Size: {Math.round(datasetPreview.total_size / 1024)} KB</p>
+                    <div className="bg-slate-900 p-4 rounded font-mono text-xs text-gray-300 whitespace-pre-wrap max-h-60 overflow-y-auto border border-slate-700">
+                        {datasetPreview.preview}
+                    </div>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
