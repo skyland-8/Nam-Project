@@ -1,72 +1,95 @@
 import React from 'react';
-import { Save, AlertTriangle } from 'lucide-react';
+import { Save, AlertTriangle, Globe, Lock, Sliders, RefreshCw } from 'lucide-react';
 
 const Settings = () => {
     return (
-        <div className="space-y-6">
-            <header>
-                <h1 className="text-3xl font-bold text-white mb-2">Settings</h1>
-                <p className="text-gray-400">Configure simulation parameters and system preferences.</p>
+        <div className="space-y-8 max-w-4xl mx-auto">
+            <header className="text-center mb-12">
+                <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">Configuration</h1>
+                <p className="text-blue-200/60 font-medium">Customize simulation parameters and security protocols.</p>
             </header>
 
-            <div className="max-w-2xl space-y-8">
+            <div className="space-y-6">
                 {/* Network Config */}
-                <section className="bg-slate-900 p-6 rounded-xl border border-slate-800">
-                    <h2 className="text-xl font-semibold text-white mb-4">Network Configuration</h2>
-                    <div className="space-y-4">
+                <section className="card">
+                    <div className="flex items-start gap-4 mb-6">
+                        <div className="p-3 bg-blue-500/10 rounded-xl text-primary">
+                            <Globe size={24} />
+                        </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-1">Backend API URL</label>
-                            <input
-                                type="text"
-                                disabled
-                                value="https://secure-fl-backend.onrender.com"
-                                className="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-gray-500 cursor-not-allowed"
-                            />
-                            <p className="text-xs text-gray-600 mt-1">Managed via environment variables.</p>
+                            <h2 className="text-xl font-bold text-white">Network & API</h2>
+                            <p className="text-gray-400 text-sm">Manage connection endpoints and timeouts.</p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-6">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Backend Endpoint</label>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    disabled
+                                    value="https://secure-fl-backend.onrender.com"
+                                    className="input-field w-full opacity-50 cursor-not-allowed"
+                                />
+                                <div className="flex items-center px-4 bg-green-500/10 text-green-400 text-xs font-bold rounded-lg border border-green-500/20">
+                                    ONLINE
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
 
                 {/* Hyperparameters */}
-                <section className="bg-slate-900 p-6 rounded-xl border border-slate-800">
-                    <h2 className="text-xl font-semibold text-white mb-4">Hyperparameters</h2>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-1">Min Clients</label>
-                            <input type="number" defaultValue={5} className="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-white focus:border-blue-500 outline-none" />
+                <section className="card">
+                    <div className="flex items-start gap-4 mb-6">
+                        <div className="p-3 bg-purple-500/10 rounded-xl text-accent">
+                            <Sliders size={24} />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-1">Round Timeout (sec)</label>
-                            <input type="number" defaultValue={300} className="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-white focus:border-blue-500 outline-none" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-1">Learning Rate</label>
-                            <input type="number" step="0.001" defaultValue={0.01} className="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-white focus:border-blue-500 outline-none" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-1">Local Epochs</label>
-                            <input type="number" defaultValue={3} className="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-white focus:border-blue-500 outline-none" />
+                            <h2 className="text-xl font-bold text-white">Training Hyperparameters</h2>
+                            <p className="text-gray-400 text-sm">Fine-tune the federated averaging algorithm.</p>
                         </div>
                     </div>
-                    <div className="mt-6 flex justify-end">
-                        <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium transition-colors">
-                            <Save size={18} /> Save Changes
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Min Clients per Round</label>
+                            <input type="number" defaultValue={5} className="input-field w-full" />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Round Timeout (sec)</label>
+                            <input type="number" defaultValue={300} className="input-field w-full" />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Learning Rate</label>
+                            <input type="number" step="0.001" defaultValue={0.01} className="input-field w-full" />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Local Epochs</label>
+                            <input type="number" defaultValue={3} className="input-field w-full" />
+                        </div>
+                    </div>
+                    <div className="mt-8 flex justify-end border-t border-white/5 pt-6">
+                        <button className="btn btn-primary">
+                            <Save size={18} /> Save Configuration
                         </button>
                     </div>
                 </section>
 
                 {/* Danger Zone */}
-                <section className="bg-red-900/10 p-6 rounded-xl border border-red-900/30">
-                    <h2 className="text-xl font-semibold text-red-400 mb-4 flex items-center gap-2">
-                        <AlertTriangle size={20} /> Danger Zone
-                    </h2>
+                <section className="rounded-2xl border border-red-500/20 bg-red-500/5 p-6 backdrop-blur-sm">
+                    <div className="flex items-center gap-4 text-red-400 mb-4">
+                        <AlertTriangle size={24} />
+                        <h2 className="text-xl font-bold">Danger Zone</h2>
+                    </div>
                     <div className="flex justify-between items-center">
                         <div>
-                            <p className="text-gray-300 font-medium">Reset Database</p>
-                            <p className="text-sm text-gray-500">Clear all ledger entries and registered clients.</p>
+                            <p className="text-white font-medium">Reset System State</p>
+                            <p className="text-sm text-red-200/60">This will wipe all ledger entries and client registrations.</p>
                         </div>
-                        <button className="bg-transparent border border-red-800 text-red-500 hover:bg-red-900/20 px-4 py-2 rounded transition-colors text-sm font-medium">
-                            Reset Data
+                        <button className="btn btn-danger">
+                            <RefreshCw size={18} /> Reset Data
                         </button>
                     </div>
                 </section>

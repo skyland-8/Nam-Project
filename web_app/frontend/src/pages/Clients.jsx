@@ -1,62 +1,50 @@
 import React from 'react';
-import { UserCheck, Clock } from 'lucide-react';
+import { UserCheck, Clock, CheckCircle, Smartphone } from 'lucide-react';
 
 const Clients = () => {
     // Mock data since API doesn't expose list yet
     const clients = [
-        { id: 'client_01', status: 'Online', lastActive: '2 mins ago', contribution: 12 },
-        { id: 'client_02', status: 'Training', lastActive: 'Just now', contribution: 8 },
-        { id: 'client_03', status: 'Offline', lastActive: '1 hour ago', contribution: 45 },
+        { id: 'client_alpha', status: 'Online', lastActive: '2s ago', contribution: 124, device: 'Pixel 7 Pro' },
+        { id: 'client_beta', status: 'Training', lastActive: '45s ago', contribution: 89, device: 'Galaxy S23' },
+        { id: 'client_gamma', status: 'Offline', lastActive: '2h ago', contribution: 450, device: 'iPhone 14' },
+        { id: 'client_delta', status: 'Online', lastActive: '5s ago', contribution: 12, device: 'OnePlus 11' },
     ];
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
             <header>
-                <h1 className="text-3xl font-bold text-white mb-2">Connected Clients</h1>
-                <p className="text-gray-400">Manage participating edge devices in the federation.</p>
+                <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">Connected Clients</h1>
+                <p className="text-blue-200/60 font-medium">Manage participating edge devices in the federation.</p>
             </header>
 
-            <div className="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden">
-                <table className="w-full text-left text-sm text-gray-400">
-                    <thead className="bg-slate-950 text-gray-200 uppercase font-semibold">
-                        <tr>
-                            <th className="px-6 py-4">Client ID</th>
-                            <th className="px-6 py-4">Status</th>
-                            <th className="px-6 py-4">Last Active</th>
-                            <th className="px-6 py-4">Updates Contributed</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800">
-                        {clients.map((client) => (
-                            <tr key={client.id} className="hover:bg-slate-800/50 transition-colors">
-                                <td className="px-6 py-4 font-medium text-white flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-full bg-blue-900/50 flex items-center justify-center text-blue-400">
-                                        <UserCheck size={16} />
-                                    </div>
-                                    {client.id}
-                                </td>
-                                <td className="px-6 py-4">
-                                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${client.status === 'Online' ? 'bg-green-900/30 text-green-400' :
-                                            client.status === 'Training' ? 'bg-yellow-900/30 text-yellow-400' :
-                                                'bg-gray-800 text-gray-400'
-                                        }`}>
-                                        <span className={`w-1.5 h-1.5 rounded-full ${client.status === 'Online' ? 'bg-green-400' :
-                                                client.status === 'Training' ? 'bg-yellow-400' :
-                                                    'bg-gray-400'
-                                            }`}></span>
-                                        {client.status}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 flex items-center gap-2">
-                                    <Clock size={14} /> {client.lastActive}
-                                </td>
-                                <td className="px-6 py-4">
-                                    {client.contribution} blocks
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {clients.map((client) => (
+                    <div key={client.id} className="card group hover:border-primary/50 transition-all cursor-pointer">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="p-3 rounded-xl bg-gradient-to-br from-gray-800 to-gray-900 shadow-inner">
+                                <Smartphone className="text-gray-400 group-hover:text-white transition-colors" size={24} />
+                            </div>
+                            <span className={`px-2 py-1 rounded text-xs font-bold border ${client.status === 'Online' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                                    client.status === 'Training' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
+                                        'bg-gray-800 text-gray-500 border-gray-700'
+                                }`}>
+                                {client.status}
+                            </span>
+                        </div>
+
+                        <h3 className="text-lg font-bold text-white mb-1">{client.id}</h3>
+                        <p className="text-sm text-gray-500 mb-6">{client.device}</p>
+
+                        <div className="flex justify-between items-center text-xs text-gray-400 border-t border-white/5 pt-4">
+                            <span className="flex items-center gap-1.5">
+                                <Clock size={12} /> {client.lastActive}
+                            </span>
+                            <span className="flex items-center gap-1.5 text-primary">
+                                <CheckCircle size={12} /> {client.contribution} blocks
+                            </span>
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     );
