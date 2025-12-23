@@ -2,26 +2,13 @@ import React from 'react';
 import { UserCheck, Clock, CheckCircle, Smartphone } from 'lucide-react';
 
 const Clients = () => {
-    const [clients, setClients] = React.useState([]);
-    const API_URL = import.meta.env.VITE_API_URL || 'https://secure-fl-backend.onrender.com';
-
-    React.useEffect(() => {
-        const fetchClients = async () => {
-            try {
-                const res = await fetch(`${API_URL}/api/v1/clients`);
-                if (res.ok) {
-                    const data = await res.json();
-                    setClients(data);
-                }
-            } catch (err) {
-                console.error("Failed to fetch clients", err);
-            }
-        };
-        fetchClients();
-        // Poll every 5 seconds
-        const interval = setInterval(fetchClients, 5000);
-        return () => clearInterval(interval);
-    }, []);
+    // Mock data since API doesn't expose list yet
+    const clients = [
+        { id: 'client_alpha', status: 'Online', lastActive: '2s ago', contribution: 124, device: 'Pixel 7 Pro' },
+        { id: 'client_beta', status: 'Training', lastActive: '45s ago', contribution: 89, device: 'Galaxy S23' },
+        { id: 'client_gamma', status: 'Offline', lastActive: '2h ago', contribution: 450, device: 'iPhone 14' },
+        { id: 'client_delta', status: 'Online', lastActive: '5s ago', contribution: 12, device: 'OnePlus 11' },
+    ];
 
     return (
         <div className="space-y-8">

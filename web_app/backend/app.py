@@ -25,6 +25,10 @@ DB_PASSWORD = os.getenv('DB_PASSWORD', 'S@i85t@run')
 def health():
     return jsonify({"status": "online", "service": "Secure FL API"}), 200
 
+@app.route('/', methods=['GET'])
+def index():
+    return jsonify({"status": "online", "service": "Secure FL API"}), 200
+
 # --- Client Management ---
 @app.route('/api/v1/clients/register', methods=['POST'])
 def register_client():

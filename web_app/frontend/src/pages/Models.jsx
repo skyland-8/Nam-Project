@@ -4,19 +4,12 @@ import { Box, GitBranch, Download, ChevronRight, Zap } from 'lucide-react';
 
 const Models = () => {
     const [modelInfo, setModelInfo] = useState(null);
-    const [modelsHistory, setModelsHistory] = useState([]);
     const API_URL = import.meta.env.VITE_API_URL || 'https://secure-fl-backend.onrender.com';
 
     useEffect(() => {
-        // Fetch current model info
         axios.get(`${API_URL}/api/v1/model`)
             .then(res => setModelInfo(res.data))
             .catch(err => console.error(err));
-
-        // Fetch history
-        axios.get(`${API_URL}/api/v1/models/history`)
-            .then(res => setModelsHistory(res.data))
-            .catch(err => console.error("History error", err));
     }, []);
 
     return (
