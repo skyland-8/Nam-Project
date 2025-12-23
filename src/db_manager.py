@@ -6,10 +6,11 @@ import os
 class DBManager:
     def __init__(self, host=None, user=None, password=None, database='secure_fl_db', port=None):
         self.config = {
-            'host': host or os.getenv('DB_HOST', 'kafka-ecf9b43-prapiskyland-6d18.b.aivencloud.com'),
-            'user': user or os.getenv('DB_USER', 'avnadmin'), # Default Aiven user is often avnadmin, but usually requires password
-            'password': password or os.getenv('DB_PASSWORD', 'AVNS_6Puzd0QD6k4HOalbyGV'),
-            'port': port or int(os.getenv('DB_PORT', 26395))
+            'host': host or os.getenv('DB_HOST', 'mysql.gb.stackcp.com'),
+            'user': user or os.getenv('DB_USER', 'Nam'),
+            'password': password or os.getenv('DB_PASSWORD', 'sdb-o.hosting.stackcp.net'),
+            'port': port or int(os.getenv('DB_PORT', 41286)),
+            'database': database or os.getenv('DB_NAME', 'nam-project-313937c3b4')
         }
         self.database = database
         self.conn = None
