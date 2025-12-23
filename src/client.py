@@ -32,15 +32,18 @@ class FLClient:
         self.model.set_parameters(global_weights, global_bias)
         
         # Train (Compute Gradients)
-        # For LogReg, we can just process the whole batch or mini-batches. 
-        # Here we do one full batch gradient step for simplicity/demo.
-        dW, db = self.model.compute_gradients(self.X, self.y)
-        
-        # We can simulate local steps by updating and computing diff, or just sending gradients.
-        # Standard FedSGD sends gradients. FedAvg sends weights.
-        # For simplicity in this demo, let's send WEIGHT UPDATE (new weights)
-        self.model.update_parameters(dW, db, learning_rate=0.5)
-        new_W, new_b = self.model.get_parameters()
+        # Check if we have data to train on
+        if self.X.shape[0] == 0:
+            # No data: return zero updates
+            new_W, new_b = self.model.get_parameters() # Unchanged
+        else:
+            dW, db = self.model.compute_gradients(self.X, self.y)
+            
+            # We can simulate local steps by updating and computing diff, or just sending gradients.
+            # Standard FedSGD sends gradients. FedAvg sends weights.
+            # For simplicity in this demo, let's send WEIGHT UPDATE (new weights)
+            self.model.update_parameters(dW, db, learning_rate=0.5)
+            new_W, new_b = self.model.get_parameters()
         
         # Create Update Package
         update_data = {

@@ -86,33 +86,60 @@ class SimulationRunner(threading.Thread):
             shared_key = KeyManager.generate_shared_key()
             
             # 4. Clients
+            # 4. Clients
             self.log(f"Setting up {self.num_clients} Clients...")
-            client_partitions = processor.partition_data(self.num_clients)
+            try:
+                client_partitions = processor.partition_data(self.num_clients)
+                self.log(f"Data partitioned into {len(client_partitions)} chunks.")
+            except Exception as e:
+                self.log(f"Error partitioning data: {e}")
+                raise e
             
             # Ensure datasets dir exists
             datasets_dir = os.path.join(current_dir, "datasets")
             os.makedirs(datasets_dir, exist_ok=True)
+            self.log(f"Datasets dir at: {datasets_dir}")
             
             clients = []
             for i in range(self.num_clients):
-                c = FLClient(f"client_{i+1}", client_partitions[i], processor, shared_key)
-                clients.append(c)
-                
-                # SAVE DATASET FOR WEB APP PREVIEW
-                # Convert indices back to text for display
-                client_text = processor.indices_to_text(client_partitions[i])
-                with open(os.path.join(datasets_dir, f"client_{i+1}.txt"), "w", encoding="utf-8") as f:
-                    f.write(client_text)
+                self.log(f"Initializing Client {i+1}...")
+                try:
+                    c = FLClient(f"client_{i+1}", client_partitions[i], processor, shared_key)
+                    clients.append(c)
+                    
+                    # SAVE DATASET FOR WEB APP PREVIEW
+                    # client_partitions[i] is ALREADY text string from partition_data
+                    client_text = client_partitions[i] 
+                    
+                    client_file_path = os.path.join(datasets_dir, f"client_{i+1}.txt")
+                    with open(client_file_path, "w", encoding="utf-8") as f:
+                        f.write(client_text)
+                    self.log(f"Saved dataset for Client {i+1}")
+                except Exception as e:
+                    self.log(f"Error initializing client {i+1}: {e}")
+                    raise e
             
             # Save Global Test Set too
-            test_X_ind, test_y = processor.create_dataset(client_partitions[0][-200:])
-            # Save a snippet of original text as "global.txt"
-            with open(os.path.join(datasets_dir, "global_shakespeare.txt"), "w", encoding="utf-8") as f:
-                f.write(processor.indices_to_text(processor.data[:5000])) # First 5000 chars
+            self.log("Creating Global Test Set...")
+            try:
+                # create_dataset returns indices, but partitions are text strings. 
+                # We need input text for create_dataset.
+                test_X_ind, test_y = processor.create_dataset(client_partitions[0][-200:])
+                
+                # Save a snippet of original text as "global.txt"
+                # Processor.text contains the full text
+                with open(os.path.join(datasets_dir, "global_shakespeare.txt"), "w", encoding="utf-8") as f:
+                    f.write(processor.text[:5000]) # First 5000 chars of actual text
+                self.log("Global Test Set created.")
+            except Exception as e:
+                self.log(f"Error creating global test set: {e}")
+                raise e
             
             # 5. Server
+            self.log("Initializing Server...")
             server = FLServer(processor.vocab_size, processor.seq_length, db, shared_key)
             server.register_clients(clients)
+            self.log("Server initialized.")
             
             # Test Data
             test_X_ind, test_y = processor.create_dataset(client_partitions[0][-200:])
