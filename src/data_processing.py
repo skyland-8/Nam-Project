@@ -32,14 +32,6 @@ class DataProcessor:
             
         return np.array(inputs), np.array(targets)
     
-    def one_hot_encode(self, inputs):
-        """Flattened one-hot encoding for Logistic Regression"""
-        # inputs shape: (batch_size, seq_length)
-        # output shape: (batch_size, seq_length * vocab_size)
-        batch_size = inputs.shape[0]
-        one_hot = np.zeros((batch_size, self.seq_length * self.vocab_size))
-        
-        for i in range(batch_size):
             for t in range(self.seq_length):
                 char_idx = inputs[i, t]
                 one_hot[i, t * self.vocab_size + char_idx] = 1

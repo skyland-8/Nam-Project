@@ -72,10 +72,27 @@ class SimulationRunner(threading.Thread):
             # 4. Clients
             self.log(f"Setting up {self.num_clients} Clients...")
             client_partitions = processor.partition_data(self.num_clients)
+            
+            # Ensure datasets dir exists
+            datasets_dir = os.path.join(current_dir, "datasets")
+            os.makedirs(datasets_dir, exist_ok=True)
+            
             clients = []
             for i in range(self.num_clients):
                 c = FLClient(f"client_{i+1}", client_partitions[i], processor, shared_key)
                 clients.append(c)
+                
+                # SAVE DATASET FOR WEB APP PREVIEW
+                # Convert indices back to text for display
+                client_text = processor.indices_to_text(client_partitions[i])
+                with open(os.path.join(datasets_dir, f"client_{i+1}.txt"), "w", encoding="utf-8") as f:
+                    f.write(client_text)
+            
+            # Save Global Test Set too
+            test_X_ind, test_y = processor.create_dataset(client_partitions[0][-200:])
+            # Save a snippet of original text as "global.txt"
+            with open(os.path.join(datasets_dir, "global_shakespeare.txt"), "w", encoding="utf-8") as f:
+                f.write(processor.indices_to_text(processor.data[:5000])) # First 5000 chars
             
             # 5. Server
             server = FLServer(processor.vocab_size, processor.seq_length, db, shared_key)
