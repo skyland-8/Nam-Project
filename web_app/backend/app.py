@@ -95,7 +95,7 @@ def get_global_model():
         "timestamp": "2025-12-23T12:00:00Z"
     })
 
-    })
+
 
 @app.route('/api/v1/models/history', methods=['GET'])
 def get_model_history():
