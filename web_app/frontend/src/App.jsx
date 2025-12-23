@@ -47,7 +47,15 @@ function App() {
             await axios.post(`${API_URL}/api/start`, { db_password: "1234" });
         } catch (err) {
             console.error("Start Simulation Error:", err);
-            alert(`Failed to start: ${err.message}\nURL: ${API_URL}\nCheck Console for details.`);
+
+            // If 400, it means it's already running. Treat as success/info.
+            if (err.response && err.response.status === 400) {
+                console.log("Simulation is already running.");
+                setStatus("RUNNING"); // Optimistic update
+                fetchData(); // Sync immediately
+            } else {
+                alert(`Failed to start: ${err.message}\nURL: ${API_URL}\nCheck Console for details.`);
+            }
         }
     };
 
