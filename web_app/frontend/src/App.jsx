@@ -61,9 +61,13 @@ function App() {
 
     const stopSim = async () => {
         try {
+            console.log("Stopping simulation...");
             await axios.post(`${API_URL}/api/stop`);
+            setStatus("IDLE"); // Optimistic update
+            alert("Simulation stopped.");
         } catch (err) {
             console.error(err);
+            alert(`Failed to stop: ${err.message}`);
         }
     };
 

@@ -154,3 +154,7 @@ def stop_simulation():
     global runner_thread
     if runner_thread:
         runner_thread.stop()
+    
+    # Force status update so UI doesn't get stuck
+    simulation_state["status"] = "IDLE"
+    simulation_state["logs"].append("[System] Simulation forced stop.")
