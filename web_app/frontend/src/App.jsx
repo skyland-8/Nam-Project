@@ -43,9 +43,11 @@ function App() {
 
     const startSim = async () => {
         try {
-            await axios.post('http://localhost:5000/api/start', { db_password: "1234" });
+            console.log("Attempting to start simulation via:", `${API_URL}/api/start`);
+            await axios.post(`${API_URL}/api/start`, { db_password: "1234" });
         } catch (err) {
-            alert("Failed to start. Check backend.");
+            console.error("Start Simulation Error:", err);
+            alert(`Failed to start: ${err.message}\nURL: ${API_URL}\nCheck Console for details.`);
         }
     };
 
