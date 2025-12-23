@@ -1,19 +1,22 @@
 <?php
 
-class ApiClient {
+class ApiClient
+{
     private $baseUrl;
 
-    public function __construct() {
-        // In a real app, this comes from Env or Config
-        $this->baseUrl = 'http://127.0.0.1:5000/api';
+    public function __construct()
+    {
+        // Points to the Deployed Render Backend
+        $this->baseUrl = 'https://secure-fl-backend.onrender.com/api';
     }
 
-    private function request($endpoint, $method = 'GET', $data = []) {
+    private function request($endpoint, $method = 'GET', $data = [])
+    {
         $url = $this->baseUrl . $endpoint;
         $options = [
             'http' => [
-                'header'  => "Content-type: application/json\r\n",
-                'method'  => $method,
+                'header' => "Content-type: application/json\r\n",
+                'method' => $method,
                 'ignore_errors' => true // Don't crash on 400/500
             ]
         ];
@@ -22,7 +25,7 @@ class ApiClient {
             $options['http']['content'] = json_encode($data);
         }
 
-        $context  = stream_context_create($options);
+        $context = stream_context_create($options);
         $result = @file_get_contents($url, false, $context);
 
         if ($result === FALSE) {
@@ -32,19 +35,23 @@ class ApiClient {
         return json_decode($result, true);
     }
 
-    public function getStatus() {
+    public function getStatus()
+    {
         return $this->request('/status');
     }
 
-    public function getLedger() {
+    public function getLedger()
+    {
         return $this->request('/ledger');
     }
 
-    public function startSimulation() {
+    public function startSimulation()
+    {
         return $this->request('/start', 'POST', ['db_password' => '1234']);
     }
 
-    public function stopSimulation() {
+    public function stopSimulation()
+    {
         return $this->request('/stop', 'POST');
     }
 }

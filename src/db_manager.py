@@ -8,7 +8,7 @@ class DBManager:
         self.config = {
             'host': host or os.getenv('DB_HOST', 'kafka-ecf9b43-prapiskyland-6d18.b.aivencloud.com'),
             'user': user or os.getenv('DB_USER', 'avnadmin'), # Default Aiven user is often avnadmin, but usually requires password
-            'password': password or os.getenv('DB_PASSWORD', ''),
+            'password': password or os.getenv('DB_PASSWORD', 'AVNS_6Puzd0QD6k4HOalbyGV'),
             'port': port or int(os.getenv('DB_PORT', 26395))
         }
         self.database = database

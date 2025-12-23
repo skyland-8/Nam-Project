@@ -10,8 +10,8 @@ function App() {
     const [metrics, setMetrics] = useState([]);
     const [datasetPreview, setDatasetPreview] = useState(null);
 
-    // API Base URL from Env (for Render) or Localhost default
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    // API Base URL (Deployed Backend)
+    const API_URL = import.meta.env.VITE_API_URL || 'https://secure-fl-backend.onrender.com';
 
     // Polling
     useEffect(() => {
