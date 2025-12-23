@@ -6,7 +6,7 @@ import os
 class DBManager:
     def __init__(self, host=None, user=None, password=None, database=None, port=None):
         self.config = {
-            'host': host or os.getenv('DB_HOST', 'mysql.gb.stackcp.com'),
+            'host': host or os.getenv('DB_HOST', 'sdb-o.hosting.stackcp.net'),
             'user': user or os.getenv('DB_USER', 'Nam'),
             'password': password or os.getenv('DB_PASSWORD', 'S@i85t@run'),
             'port': port or int(os.getenv('DB_PORT', 41286)),
