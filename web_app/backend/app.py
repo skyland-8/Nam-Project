@@ -289,7 +289,10 @@ def reset_system():
 
 @app.route('/api/status', methods=['GET'])
 def get_status():
-    return jsonify(simulation_runner.simulation_state)
+    status_data = simulation_runner.simulation_state.copy()
+    if "error_details" not in status_data:
+         status_data["error_details"] = None
+    return jsonify(status_data)
 
 # Wrapper for legacy endpoint
 @app.route('/api/ledger', methods=['GET']) 

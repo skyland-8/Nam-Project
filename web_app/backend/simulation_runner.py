@@ -149,6 +149,7 @@ class SimulationRunner(threading.Thread):
         except Exception as e:
             self.log(f"ERROR: {str(e)}")
             simulation_state["status"] = "ERROR"
+            simulation_state["error_details"] = str(e)
             import traceback
             traceback.print_exc()
         finally:

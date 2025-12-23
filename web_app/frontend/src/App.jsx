@@ -13,7 +13,7 @@ function App() {
     const [logs, setLogs] = useState([]);
     const [ledger, setLedger] = useState([]);
     const [metrics, setMetrics] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [errorDetails, setErrorDetails] = useState(null);
 
     // API Base URL (Deployed Backend or Local)
     // Check if running on localhost to default to local backend
@@ -36,6 +36,12 @@ function App() {
             setStatus(statusRes.data.status);
             setLogs(statusRes.data.logs?.slice().reverse() || []);
 
+            if (statusRes.data.error_details) {
+                setErrorDetails(statusRes.data.error_details);
+            } else if (statusRes.data.status !== "ERROR") {
+                setErrorDetails(null);
+            }
+
             if (statusRes.data.metrics && statusRes.data.metrics.loss) {
                 const chartData = statusRes.data.metrics.rounds.map((r, i) => ({
                     round: r,
@@ -54,10 +60,14 @@ function App() {
 
     const startSim = async () => {
         setLoading(true);
+        setErrorDetails(null); // Clear previous manual errors
         try {
             await axios.post(`${API_URL}/api/start`, { db_password: "1234" });
         } catch (err) {
-            if (err.response && err.response.status === 400) {
+            // Check if backend sent an error message
+            if (err.response && err.response.data && err.response.data.message) {
+                alert("Start Failed: " + err.response.data.message);
+            } else if (err.response && err.response.status === 400) {
                 setStatus("RUNNING");
                 fetchData();
             } else {
@@ -94,6 +104,7 @@ function App() {
                             metrics={metrics}
                             ledger={ledger}
                             loading={loading}
+                            error={errorDetails}
                         />
                     } />
                     <Route path="/clients" element={<Clients />} />

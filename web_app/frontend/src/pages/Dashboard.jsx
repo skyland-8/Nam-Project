@@ -2,9 +2,22 @@ import React from 'react';
 import { Play, Square, Activity, Database, Server, Cpu } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
-const Dashboard = ({ status, startSim, stopSim, logs, metrics, ledger, loading }) => {
+const Dashboard = ({ status, startSim, stopSim, logs, metrics, ledger, loading, error }) => {
     return (
         <div className="space-y-8">
+            {error && (
+                <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-4 flex items-center gap-3 animate-fade-in">
+                    <div className="p-2 bg-red-500/20 rounded-full text-red-400">
+                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 className="font-bold text-red-400">System Error</h3>
+                        <p className="text-sm text-red-200">{error}</p>
+                    </div>
+                </div>
+            )}
             <header className="flex justify-between items-end">
                 <div>
                     <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">System Overview</h1>
