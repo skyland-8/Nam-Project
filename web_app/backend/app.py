@@ -75,6 +75,44 @@ def get_global_model():
         "timestamp": "2025-12-23T12:00:00Z"
     })
 
+@app.route('/api/v1/datasets', methods=['GET'])
+def list_datasets():
+    """List available dataset partitions"""
+    datasets_dir = os.path.join(project_root, "web_app", "backend", "datasets")
+    if not os.path.exists(datasets_dir):
+        return jsonify([])
+    
+    files = [f for f in os.listdir(datasets_dir) if f.endswith(".txt")]
+    return jsonify(sorted(files))
+
+@app.route('/api/v1/datasets/<filename>', methods=['GET'])
+def get_dataset_file(filename):
+    """Get a specific dataset partition"""
+    try:
+        # Security: Prevent directory traversal
+        if ".." in filename or "/" in filename or "\\" in filename:
+             return jsonify({"error": "Invalid filename"}), 400
+
+        datasets_dir = os.path.join(project_root, "web_app", "backend", "datasets")
+        file_path = os.path.join(datasets_dir, filename)
+        
+        if not os.path.exists(file_path):
+             # Fallback to main shakespeare if requested or not found
+             if filename == "sample":
+                 return get_dataset_sample()
+             return jsonify({"error": "File not found"}), 404
+            
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read(2000) # Preview 2000 chars
+        
+        return jsonify({
+            "dataset": filename,
+            "total_size": os.path.getsize(file_path),
+            "preview": content + "..."
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/api/v1/dataset/sample', methods=['GET'])
 def get_dataset_sample():
     """Get a preview of the training data"""
