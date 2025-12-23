@@ -36,23 +36,26 @@ def register_client():
     if not client_id or not public_key:
         return jsonify({"error": "Missing client_id or public_key"}), 400
 
+    db = None
     try:
         db = DBManager(password=DB_PASSWORD)
         db.connect()
         db.register_client(client_id, public_key)
-        db.close()
         return jsonify({"message": f"Client {client_id} registered successfully"}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    finally:
+        if db:
+            db.close()
 
 @app.route('/api/v1/clients', methods=['GET'])
 def list_clients():
     """List all registered participants"""
+    db = None
     try:
         db = DBManager(password=DB_PASSWORD)
         db.connect()
         rows = db.get_all_clients()
-        db.close()
         
         clients = []
         for r in rows:
@@ -64,6 +67,9 @@ def list_clients():
         return jsonify(clients)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    finally:
+        if db:
+            db.close()
 
 # --- FL Lifecycle ---
 
@@ -100,11 +106,11 @@ def get_global_model():
 @app.route('/api/v1/models/history', methods=['GET'])
 def get_model_history():
     """Get history of global model checkpoints"""
+    db = None
     try:
         db = DBManager(password=DB_PASSWORD)
         db.connect()
         rows = db.get_model_history()
-        db.close()
         
         history = []
         for r in rows:
@@ -117,6 +123,9 @@ def get_model_history():
         return jsonify(history)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    finally:
+        if db:
+            db.close()
 
 @app.route('/api/v1/datasets', methods=['GET'])
 def list_datasets():
@@ -185,6 +194,7 @@ def submit_update():
     if not all(k in data for k in required_fields):
         return jsonify({"error": "Invalid update payload"}), 400
 
+    db = None
     try:
         db = DBManager(password=DB_PASSWORD)
         db.connect()
@@ -196,16 +206,19 @@ def submit_update():
             data['tag'],
             data['signature']
         )
-        db.close()
         return jsonify({"message": "Update received and stored in ledger"}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    finally:
+        if db:
+            db.close()
 
 
 # --- Ledger & Analytics ---
 
 @app.route('/api/v1/ledger', methods=['GET'])
 def get_ledger():
+    db = None
     try:
         db = DBManager(password=DB_PASSWORD)
         db.connect()
@@ -216,7 +229,6 @@ def get_ledger():
             ORDER BY update_id DESC LIMIT 50
         """)
         rows = db.cursor.fetchall()
-        db.close()
         
         ledger_data = []
         for r in rows:
@@ -232,6 +244,9 @@ def get_ledger():
         return jsonify(ledger_data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    finally:
+        if db:
+            db.close()
 
 # =========================================================
 #  SIMULATION CONTROL (Legacy / Admin)
@@ -255,12 +270,12 @@ def stop_sim():
 @app.route('/api/v1/reset', methods=['POST'])
 def reset_system():
     """Reset the entire system state (Danger Zone)"""
+    db = None
     try:
         simulation_runner.stop_simulation()
         db = DBManager(password=DB_PASSWORD)
         db.connect()
         success = db.reset_database()
-        db.close()
         
         if success:
             return jsonify({"message": "System reset successful"}), 200
@@ -268,6 +283,9 @@ def reset_system():
             return jsonify({"error": "Failed to reset database"}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    finally:
+        if db:
+            db.close()
 
 @app.route('/api/status', methods=['GET'])
 def get_status():

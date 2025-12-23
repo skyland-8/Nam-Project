@@ -151,6 +151,9 @@ class SimulationRunner(threading.Thread):
             simulation_state["status"] = "ERROR"
             import traceback
             traceback.print_exc()
+        finally:
+            if 'db' in locals() and db:
+                db.close()
 
     def stop(self):
         self.should_stop = True
