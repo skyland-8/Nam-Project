@@ -62,7 +62,7 @@ function App() {
         setLoading(true);
         setErrorDetails(null); // Clear previous manual errors
         try {
-            await axios.post(`${API_URL}/api/start`, { db_password: "1234" });
+            await axios.post(`${API_URL}/api/start`, { db_password: "S@i85t@run" });
         } catch (err) {
             // Check if backend sent an error message
             if (err.response && err.response.data && err.response.data.message) {
