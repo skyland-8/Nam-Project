@@ -4,12 +4,20 @@ import { Box, GitBranch, Download, ChevronRight, Zap } from 'lucide-react';
 
 const Models = () => {
     const [modelInfo, setModelInfo] = useState(null);
+    const [modelsHistory, setModelsHistory] = useState([]);
     const API_URL = import.meta.env.VITE_API_URL || 'https://secure-fl-backend.onrender.com';
 
     useEffect(() => {
         axios.get(`${API_URL}/api/v1/model`)
             .then(res => setModelInfo(res.data))
             .catch(err => console.error(err));
+
+        // Mock history for now since API might not have history endpoint yet
+        setModelsHistory([
+            { version: '1.0', round_id: 5, accuracy: 0.942, timestamp: new Date().toISOString() },
+            { version: '0.9', round_id: 4, accuracy: 0.891, timestamp: new Date(Date.now() - 3600000).toISOString() },
+            { version: '0.8', round_id: 3, accuracy: 0.825, timestamp: new Date(Date.now() - 7200000).toISOString() },
+        ]);
     }, []);
 
     return (

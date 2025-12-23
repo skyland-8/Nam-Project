@@ -58,7 +58,23 @@ class SimulationRunner(threading.Thread):
             
             # 1. Data
             self.log("Loading Shakespeare Dataset...")
-            processor = DataProcessor(os.path.join(project_root, "shakespeare.txt"), seq_length=40)
+            data_file_path = os.path.join(project_root, "shakespeare.txt")
+            
+            # DEBUGGING: Log current path info
+            self.log(f"CWD: {os.getcwd()}")
+            self.log(f"Project Root: {project_root}")
+            self.log(f"Looking for data at: {data_file_path}")
+            
+            if not os.path.exists(data_file_path):
+                self.log(f"CRITICAL ERROR: File not found at {data_file_path}")
+                # List root contents to help debug
+                try:
+                    self.log(f"Root contents: {os.listdir(project_root)}")
+                except:
+                    pass
+                raise FileNotFoundError(f"Dataset file missing at {data_file_path}")
+
+            processor = DataProcessor(data_file_path, seq_length=40)
             processor.load_data()
             
             # 2. DB
@@ -147,11 +163,17 @@ class SimulationRunner(threading.Thread):
             db.close()
             
         except Exception as e:
-            self.log(f"ERROR: {str(e)}")
-            simulation_state["status"] = "ERROR"
-            simulation_state["error_details"] = str(e)
+            error_msg = str(e)
+            self.log(f"ERROR: {error_msg}")
+            
+            # Print full stack trace to backend logs
             import traceback
             traceback.print_exc()
+            
+            simulation_state["status"] = "ERROR"
+            # Sanitize error for frontend display if needed, but usually str(e) is fine.
+            # If it's very long, maybe truncate?
+            simulation_state["error_details"] = error_msg if len(error_msg) < 200 else error_msg[:200] + "..."
         finally:
             if 'db' in locals() and db:
                 db.close()

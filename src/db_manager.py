@@ -140,6 +140,21 @@ class DBManager:
         except Error as e:
             print(f"Error storing global model: {e}")
 
+    def get_global_models(self):
+        try:
+            sql = """
+            SELECT m.model_id, m.round_id, m.accuracy, m.created_at, r.status 
+            FROM global_models m 
+            JOIN rounds r ON m.round_id = r.round_id 
+            ORDER BY m.round_id DESC
+            """
+            self.cursor.execute(sql)
+            return self.cursor.fetchall()
+        except Error as e:
+            print(f"Error fetching global models: {e}")
+            return []
+            print(f"Error storing global model: {e}")
+
     def get_all_clients(self):
         try:
             sql = "SELECT client_id, registered_at FROM clients ORDER BY registered_at DESC"

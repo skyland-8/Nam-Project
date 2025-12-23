@@ -298,6 +298,31 @@ def get_status():
          status_data["error_details"] = None
     return jsonify(status_data)
 
+@app.route('/api/v1/models/history', methods=['GET'])
+def get_model_history():
+    db = None
+    try:
+        db = DBManager(password=DB_PASSWORD)
+        db.connect()
+        rows = db.get_global_models()
+        
+        history = []
+        for r in rows:
+            history.append({
+                "model_id": r[0],
+                "round_id": r[1],
+                "accuracy": r[2],
+                "timestamp": r[3],
+                "version": str(r[1]) + ".0", # Version based on round ID
+                "status": r[4]
+            })
+        return jsonify(history)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if db:
+            db.close()
+
 # Wrapper for legacy endpoint
 @app.route('/api/ledger', methods=['GET']) 
 def get_ledger_legacy():
