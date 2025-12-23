@@ -18,17 +18,17 @@ class ErrorBoundary extends React.Component {
     render() {
         if (this.state.hasError) {
             return (
-                <div className="min-h-screen bg-gray-900 text-white p-8 font-mono">
-                    <h1 className="text-3xl text-red-500 font-bold mb-4">Something went wrong.</h1>
-                    <div className="bg-black/50 p-4 rounded border border-red-500/20 overflow-auto">
-                        <h2 className="text-xl text-red-300 mb-2">{this.state.error && this.state.error.toString()}</h2>
-                        <pre className="text-xs text-gray-400 whitespace-pre-wrap">
+                <div style={{ minHeight: '100vh', backgroundColor: '#111827', color: 'white', padding: '2rem', fontFamily: 'monospace', position: 'relative', zIndex: 9999 }}>
+                    <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#ef4444', marginBottom: '1rem' }}>Something went wrong.</h1>
+                    <div style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '1rem', borderRadius: '0.25rem', border: '1px solid rgba(239,68,68,0.2)', overflow: 'auto' }}>
+                        <h2 style={{ fontSize: '1.25rem', color: '#fca5a5', marginBottom: '0.5rem' }}>{this.state.error && this.state.error.toString()}</h2>
+                        <pre style={{ fontSize: '0.75rem', color: '#9ca3af', whiteSpace: 'pre-wrap' }}>
                             {this.state.errorInfo && this.state.errorInfo.componentStack}
                         </pre>
                     </div>
                     <button
                         onClick={() => window.location.reload()}
-                        className="mt-6 px-4 py-2 bg-blue-600 rounded hover:bg-blue-700"
+                        style={{ marginTop: '1.5rem', padding: '0.5rem 1rem', backgroundColor: '#2563eb', color: 'white', borderRadius: '0.25rem', border: 'none', cursor: 'pointer' }}
                     >
                         Reload Application
                     </button>
