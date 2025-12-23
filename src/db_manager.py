@@ -4,7 +4,7 @@ import json
 import os
 
 class DBManager:
-    def __init__(self, host=None, user=None, password=None, database='secure_fl_db', port=None):
+    def __init__(self, host=None, user=None, password=None, database=None, port=None):
         self.config = {
             'host': host or os.getenv('DB_HOST', 'mysql.gb.stackcp.com'),
             'user': user or os.getenv('DB_USER', 'Nam'),
@@ -12,17 +12,17 @@ class DBManager:
             'port': port or int(os.getenv('DB_PORT', 41286)),
             'database': database or os.getenv('DB_NAME', 'nam-project-313937c3b4')
         }
-        self.database = database
+        self.database = self.config['database']
         self.conn = None
         self.cursor = None
 
     def connect(self):
         try:
-            # First connect without database to create it if needed
+            # Connect directly to the specific database
             self.conn = mysql.connector.connect(**self.config)
             self.cursor = self.conn.cursor()
             
-            self.cursor.execute(f"CREATE DATABASE IF NOT EXISTS {self.database}")
+            # self.cursor.execute(f"CREATE DATABASE IF NOT EXISTS {self.database}") # Not allowed on shared hosting
             self.cursor.execute(f"USE {self.database}")
             
             self._create_tables()
