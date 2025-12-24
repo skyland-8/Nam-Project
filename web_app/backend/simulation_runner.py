@@ -37,7 +37,10 @@ class SimulationRunner(threading.Thread):
         self.should_stop = False
 
     def log(self, message):
-        timestamp = time.strftime("%H:%M:%S")
+        from datetime import datetime
+        import pytz
+        tz = pytz.timezone('Asia/Kolkata')
+        timestamp = datetime.now(tz).strftime("%H:%M:%S")
         log_entry = f"[{timestamp}] {message}"
         print(log_entry)
         simulation_state["logs"].append(log_entry)

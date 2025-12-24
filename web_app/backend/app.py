@@ -1,7 +1,10 @@
+import os
+import threading
+import time
+import pytz
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import sys
-import os
 import json
 
 # Add project root to sys.path
@@ -242,7 +245,7 @@ def get_ledger():
                 "client": r[2],
                 "data_hash": r[3][:20] + "...", 
                 "signature": r[4][:20] + "...",
-                "timestamp": r[5]
+                "timestamp": r[5].astimezone(pytz.timezone('Asia/Kolkata')).strftime("%Y-%m-%d %H:%M:%S") if r[5] else ""
             })
             
         return jsonify(ledger_data)
@@ -255,6 +258,41 @@ def get_ledger():
 # =========================================================
 #  SIMULATION CONTROL (Legacy / Admin)
 # =========================================================
+
+
+@app.route('/api/v1/models/history', methods=['GET'])
+def get_model_history():
+    db = None
+    try:
+        db = DBManager(password=DB_PASSWORD)
+        db.connect()
+        rows = db.get_global_models()
+        
+        history = []
+        tz = pytz.timezone('Asia/Kolkata')
+        
+        for r in rows:
+            ts = r[3]
+            ts_str = ""
+            if ts:
+                 if ts.tzinfo is None:
+                     ts = pytz.utc.localize(ts)
+                 ts_str = ts.astimezone(tz).strftime("%Y-%m-%d %H:%M:%S")
+
+            history.append({
+                "model_id": r[0],
+                "round_id": r[1],
+                "accuracy": r[2],
+                "timestamp": ts_str,
+                "version": str(r[1]) + ".0", 
+                "status": r[4]
+            })
+        return jsonify(history)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if db:
+            db.close()
 
 @app.route('/api/start', methods=['POST'])
 def start_sim():

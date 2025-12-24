@@ -12,12 +12,10 @@ const Models = () => {
             .then(res => setModelInfo(res.data))
             .catch(err => console.error(err));
 
-        // Mock history for now since API might not have history endpoint yet
-        setModelsHistory([
-            { version: '1.0', round_id: 5, accuracy: 0.942, timestamp: new Date().toISOString() },
-            { version: '0.9', round_id: 4, accuracy: 0.891, timestamp: new Date(Date.now() - 3600000).toISOString() },
-            { version: '0.8', round_id: 3, accuracy: 0.825, timestamp: new Date(Date.now() - 7200000).toISOString() },
-        ]);
+        // Fetch real history
+        axios.get(`${API_URL}/api/v1/models/history`)
+            .then(res => setModelsHistory(res.data))
+            .catch(err => console.error(err));
     }, []);
 
     return (
