@@ -110,29 +110,7 @@ def get_global_model():
 
 
 
-@app.route('/api/v1/models/history', methods=['GET'])
-def get_model_history():
-    """Get history of global model checkpoints"""
-    db = None
-    try:
-        db = DBManager(password=DB_PASSWORD)
-        db.connect()
-        rows = db.get_model_history()
-        
-        history = []
-        for r in rows:
-            history.append({
-                "version": r[0],
-                "round_id": r[1],
-                "accuracy": r[2],
-                "timestamp": r[3]
-            })
-        return jsonify(history)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    finally:
-        if db:
-            db.close()
+
 
 @app.route('/api/v1/datasets', methods=['GET'])
 def list_datasets():

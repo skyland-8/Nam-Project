@@ -46,7 +46,8 @@ function App() {
             if (statusRes.data.metrics && statusRes.data.metrics.loss) {
                 const chartData = statusRes.data.metrics.rounds.map((r, i) => ({
                     round: r,
-                    loss: statusRes.data.metrics.loss[i]
+                    loss: statusRes.data.metrics.loss[i],
+                    accuracy: statusRes.data.metrics.accuracy ? statusRes.data.metrics.accuracy[i] : 0
                 }));
                 setMetrics(chartData);
             }

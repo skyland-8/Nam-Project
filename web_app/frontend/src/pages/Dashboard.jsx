@@ -1,8 +1,31 @@
-import React from 'react';
+import axios from 'axios';
+import { useState, useEffect, useMemo } from 'react';
 import { Play, Square, Activity, Database, Server, Cpu } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
 const Dashboard = ({ status, startSim, stopSim, logs, metrics, ledger, loading, error }) => {
+    const [history, setHistory] = useState([]);
+    const API_URL = import.meta.env.VITE_API_URL || 'https://secure-fl-backend.onrender.com';
+
+    useEffect(() => {
+        // Fetch history for persistence when simulation is IDLE
+        if (status === 'IDLE' && metrics.length === 0) {
+            axios.get(`${API_URL}/api/v1/models/history`)
+                .then(res => {
+                    const formatted = res.data.map(h => ({
+                        round: h.round_id,
+                        accuracy: h.accuracy,
+                        loss: 0 // History doesn't have loss yet
+                    })).reverse(); // API returns descending, we want ascending for chart
+                    setHistory(formatted);
+                })
+                .catch(err => console.error("Failed to fetch history:", err));
+        }
+    }, [status, metrics.length]);
+
+    // Use live metrics if available, otherwise history
+    const chartData = metrics.length > 0 ? metrics : history;
+
     return (
         <div className="space-y-8">
             {error && (
@@ -71,7 +94,7 @@ const Dashboard = ({ status, startSim, stopSim, logs, metrics, ledger, loading, 
                     </div>
                     <div>
                         <p className="text-sm text-gray-400 font-medium">Active Round</p>
-                        <p className="text-lg font-bold text-white"># {metrics.length > 0 ? metrics[metrics.length - 1].round : 0}</p>
+                        <p className="text-lg font-bold text-white"># {metrics.length > 0 ? metrics[metrics.length - 1].round : (history.length > 0 ? history[history.length - 1].round : 0)}</p>
                     </div>
                 </div>
                 <div className="card flex items-center gap-4">
@@ -90,27 +113,27 @@ const Dashboard = ({ status, startSim, stopSim, logs, metrics, ledger, loading, 
                 <div className="lg:col-span-2 card">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-xl font-bold flex gap-2 items-center">
-                            <Activity className="text-primary" size={20} /> Model Convergence
+                            <Activity className="text-primary" size={20} /> Model Accuracy
                         </h2>
-                        <span className="text-xs font-mono text-gray-500 bg-surface px-2 py-1 rounded">LOSS_METRIC</span>
+                        <span className="text-xs font-mono text-gray-500 bg-surface px-2 py-1 rounded">ACCURACY_METRIC</span>
                     </div>
                     <div className="h-80">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={metrics}>
+                            <AreaChart data={chartData}>
                                 <defs>
-                                    <linearGradient id="colorLoss" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                                    <linearGradient id="colorAcc" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
                                 <XAxis dataKey="round" stroke="#64748b" tick={{ fill: '#64748b' }} axisLine={false} tickLine={false} />
-                                <YAxis stroke="#64748b" tick={{ fill: '#64748b' }} axisLine={false} tickLine={false} />
+                                <YAxis domain={[0, 1]} stroke="#64748b" tick={{ fill: '#64748b' }} axisLine={false} tickLine={false} />
                                 <Tooltip
                                     contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
                                     itemStyle={{ color: '#fff' }}
                                 />
-                                <Area type="monotone" dataKey="loss" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorLoss)" />
+                                <Area type="monotone" dataKey="accuracy" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorAcc)" />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>

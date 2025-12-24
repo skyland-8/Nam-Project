@@ -179,12 +179,20 @@ class SimulationRunner(threading.Thread):
                 server.aggregate_updates(round_id)
                 
                 # Evaluate
-                loss = server.evaluate(test_X, test_y)
-                self.log(f"Round {r} Complete. Loss: {loss:.4f}")
+                loss, accuracy = server.evaluate(test_X, test_y)
+                self.log(f"Round {r} Complete. Loss: {loss:.4f}, Accuracy: {accuracy:.4f}")
                 
                 # Update Metrics
                 simulation_state["metrics"]["rounds"].append(r)
-                simulation_state["metrics"]["loss"].append(float(loss)) # float for JSON serialization
+                simulation_state["metrics"]["loss"].append(float(loss)) 
+                simulation_state["metrics"]["accuracy"].append(float(accuracy))
+
+                # Save Global Model Checkpoint to DB
+                db.store_global_model(
+                    round_id, 
+                    server.global_model.to_json(), 
+                    float(accuracy)
+                )
                 
                 time.sleep(1) # Delay between rounds
 

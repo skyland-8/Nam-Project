@@ -67,15 +67,15 @@ class FLServer:
         # Update Global Model
         self.global_model.set_parameters(avg_W, avg_b)
         print(f"Server: Global model updated for Round {round_id}.")
-        
-        # Save Global Model Checkpoint to DB
-        self.db_manager.store_global_model(
-            round_id, 
-            self.global_model.to_json(), 
-            0.0 # Placeholder for accuracy evaluation
-        )
 
     def evaluate(self, test_X, test_y):
+        # Compute Loss
         loss = self.global_model.compute_loss(test_X, test_y)
-        print(f"Global Model Loss: {loss:.4f}")
-        return loss
+        
+        # Compute Accuracy
+        y_pred_probs = self.global_model.forward(test_X)
+        y_pred = np.argmax(y_pred_probs, axis=1)
+        accuracy = np.mean(y_pred == test_y)
+        
+        print(f"Global Model - Loss: {loss:.4f}, Accuracy: {accuracy:.4f}")
+        return loss, accuracy
